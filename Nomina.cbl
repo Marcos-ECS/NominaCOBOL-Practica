@@ -2,7 +2,21 @@
        PROGRAM-ID. Nomina.
        AUTHOR. MARCOS CANUL.
        ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ARCHIVO-NOMINA ASSIGN TO "nomina.txt"
+           ORGANIZATION IS LINE SEQUENTIAL.
+           
        DATA DIVISION.
+       FILE SECTION.
+       FD ARCHIVO-NOMINA.
+       01 REGISTRO-NOMINA.
+           05 RN-NOMBRE-EMPLEADO     PIC X(50).
+           05 RN-HORAS-TRABAJADAS    PIC 9(3)V99.
+           05 RN-SALARIO-POR-HORA    PIC 9(4)V99.
+           05 RN-SALARIO-BRUTO       PIC 9(7)V99.
+           05 RN-DEDUCCIONES         PIC 9(6)V99.
+           05 RN-SALARIO-NETO        PIC 9(7)V99.
        WORKING-STORAGE SECTION.
        01 NOMBRE-EMPLEADO     PIC X(50).
        01 HORAS-TRABAJADAS    PIC 9(3)V99.
@@ -11,8 +25,38 @@
        01 SALARIO-BRUTO       PIC 9(7)V99.
        01 SALARIO-NETO        PIC 9(7)V99.
        01 NUMERO-DE-EMPLEADOS PIC 9(3).
+       01 OPCION              PIC 9.
+       01 OPCION-REPORTE      PIC 9.
+
 
        PROCEDURE DIVISION.
+       INICIO.
+           OPEN OUTPUT ARCHIVO-NOMINA.
+           PERFORM MOSTRAR-MENU UNTIL OPCION = 4.
+           STOP RUN.
+
+       MOSTRAR-MENU.
+           DISPLAY "======NOMINA COBOL PRACTICA======".
+           DISPLAY "1. Calcular nomina de un empleado".
+           DISPLAY "2. Calcular nomina de varios empleados".
+           DISPLAY "3. Ver nomina de empleado".
+           DISPLAY "4. Salir".
+           DISPLAY "Ingrese su opción (1-4): ".
+           ACCEPT OPCION.
+           EVALUATE OPCION
+               WHEN 1
+                   PERFORM INGRESO-DE-DATOS-DE-EMPLEADO
+               WHEN 2
+                   DISPLAY "Funcionalidad no disponible aún."
+               WHEN 3
+                   DISPLAY "Funcionalidad no disponible aún."
+               WHEN 4
+                   PERFORM SALIR
+               WHEN OTHER
+                   DISPLAY "Opción inválida. Intente nuevamente."
+           END-EVALUATE.
+
+
        INGRESO-DE-DATOS-DE-EMPLEADO.
            PERFORM VALIDAR-NOMBRE.
            PERFORM VALIDAR-SALARIO-POR-HORA.
@@ -21,7 +65,7 @@
            PERFORM CALCULAR-DEDUCCIONES.
            PERFORM CALCULAR-SALARIO-NETO.
            PERFORM GENERAR-REPORTE.
-           STOP RUN.
+           PERFORM MENU-REPORTE-FINAL.
 
        VALIDAR-NOMBRE.
            DISPLAY "Ingrese el nombre del empleado".
@@ -56,15 +100,49 @@
 
        CALCULAR-SALARIO-NETO.
            COMPUTE SALARIO-NETO = SALARIO-BRUTO - DEDUCCIONES.
+       
+       MENU-REPORTE-FINAL.
+           DISPLAY "==========OPERACION FINALIZADA=========="
+           DISPLAY "1. REGRESAR AL MENU PRINCIPAL"
+           DISPLAY "2. SALIR"
+           DISPLAY "Ingrese su opción (1-2):"
+           
+           ACCEPT OPCION-REPORTE.
+           EVALUATE OPCION-REPORTE
+               WHEN 1
+                   PERFORM MOSTRAR-MENU
+               WHEN 2
+                   PERFORM SALIR
+               WHEN OTHER
+                   DISPLAY "Opción inválida. Intente nuevamente."
+           END-EVALUATE.
+
 
        GENERAR-REPORTE.
            DISPLAY "----------------------------------------".
-           DISPLAY "Nombre del empleado: ", NOMBRE-EMPLEADO.
-           DISPLAY "Horas trabajadas: ", HORAS-TRABAJADAS.
-           DISPLAY "Salario por hora: ", SALARIO-POR-HORA.
-           DISPLAY "Salario bruto: ", SALARIO-BRUTO.
-           DISPLAY "Deducciones: ", DEDUCCIONES.
-           DISPLAY "Salario neto: ", SALARIO-NETO.
+           DISPLAY "|          REPORTE DE NÓMINA           |".
            DISPLAY "----------------------------------------".
+           DISPLAY "|Nombre del empleado:|", NOMBRE-EMPLEADO(1:25).
+           DISPLAY "|Horas trabajadas:   |", HORAS-TRABAJADAS.
+           DISPLAY "|Salario por hora:   |", SALARIO-POR-HORA.
+           DISPLAY "|Salario bruto:      |", SALARIO-BRUTO.
+           DISPLAY "|Deducciones:        |", DEDUCCIONES.
+           DISPLAY "|Salario neto:       |", SALARIO-NETO.
+           DISPLAY "----------------------------------------"
+           PERFORM GENERAR-ARCHIVO.
+
+       GENERAR-ARCHIVO.
+           MOVE NOMBRE-EMPLEADO TO RN-NOMBRE-EMPLEADO.
+           MOVE HORAS-TRABAJADAS TO RN-HORAS-TRABAJADAS.
+           MOVE SALARIO-POR-HORA TO RN-SALARIO-POR-HORA.
+           MOVE SALARIO-BRUTO TO RN-SALARIO-BRUTO.
+           MOVE DEDUCCIONES TO RN-DEDUCCIONES.
+           MOVE SALARIO-NETO TO RN-SALARIO-NETO.
+           WRITE REGISTRO-NOMINA.
+           DISPLAY "Datos guardados en el archivo 'nomina.txt'".
+
+       SALIR.
+           CLOSE ARCHIVO-NOMINA.
+           DISPLAY "========SALIENDO DEL PROGRAMA....=======".
            STOP RUN.
        END PROGRAM Nomina.
