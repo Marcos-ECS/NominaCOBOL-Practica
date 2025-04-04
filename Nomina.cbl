@@ -27,7 +27,11 @@
        01 NUMERO-DE-EMPLEADOS PIC 9(3).
        01 OPCION              PIC 9.
        01 OPCION-REPORTE      PIC 9.
-
+       01 HORAS-TRABAJADAS-FORMAT PIC Z,ZZZ,ZZ9.99.
+       01 SALARIO-POR-HORA-FORMAT PIC Z,ZZZ,ZZ9.99.
+       01 SALARIO-BRUTO-FORMAT    PIC Z,ZZZ,ZZ9.99.
+       01 DEDUCCIONES-FORMAT      PIC Z,ZZZ,ZZ9.99.
+       01 SALARIO-NETO-FORMAT     PIC Z,ZZZ,ZZ9.99.
 
        PROCEDURE DIVISION.
        INICIO.
@@ -119,15 +123,20 @@
 
 
        GENERAR-REPORTE.
+           MOVE HORAS-TRABAJADAS TO HORAS-TRABAJADAS-FORMAT.
+           MOVE SALARIO-POR-HORA TO SALARIO-POR-HORA-FORMAT.
+           MOVE SALARIO-BRUTO TO SALARIO-BRUTO-FORMAT.
+           MOVE DEDUCCIONES TO DEDUCCIONES-FORMAT.
+           MOVE SALARIO-NETO TO SALARIO-NETO-FORMAT.
            DISPLAY "----------------------------------------".
            DISPLAY "|          REPORTE DE NÓMINA           |".
            DISPLAY "----------------------------------------".
            DISPLAY "|Nombre del empleado:|", NOMBRE-EMPLEADO(1:25).
-           DISPLAY "|Horas trabajadas:   |", HORAS-TRABAJADAS.
-           DISPLAY "|Salario por hora:   |", SALARIO-POR-HORA.
-           DISPLAY "|Salario bruto:      |", SALARIO-BRUTO.
-           DISPLAY "|Deducciones:        |", DEDUCCIONES.
-           DISPLAY "|Salario neto:       |", SALARIO-NETO.
+           DISPLAY "|Horas trabajadas:   |", HORAS-TRABAJADAS-FORMAT.
+           DISPLAY "|Salario por hora:   |", SALARIO-POR-HORA-FORMAT.
+           DISPLAY "|Salario bruto:      |", SALARIO-BRUTO-FORMAT.
+           DISPLAY "|Deducciones:        |", DEDUCCIONES-FORMAT.
+           DISPLAY "|Salario neto:       |", SALARIO-NETO-FORMAT.
            DISPLAY "----------------------------------------"
            PERFORM GENERAR-ARCHIVO.
 
